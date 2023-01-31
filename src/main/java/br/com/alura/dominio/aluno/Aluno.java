@@ -48,10 +48,18 @@ public class Aluno {
     public Collection<Telefone> getTelefones() {
         return telefones;
     }
+    
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 
     @Override
     public String toString() {
         return "Aluno [cpf=" + cpf + ", nome=" + nome + ", email=" + email + ", telefones=" + telefones + "]";
+    }
+
+    public String getSenha() {
+        return senha;
     }
 
 }

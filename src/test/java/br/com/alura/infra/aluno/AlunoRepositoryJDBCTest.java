@@ -19,6 +19,8 @@ import com.radcortez.flyway.test.annotation.FlywayTest;
 
 import br.com.alura.dominio.aluno.Aluno;
 import br.com.alura.dominio.aluno.AlunoBuilder;
+import br.com.alura.dominio.aluno.AlunoNaoEncontradoException;
+import br.com.alura.dominio.aluno.AlunoNaoMatriculadoException;
 import br.com.alura.dominio.aluno.Cpf;
 
 @FlywayTest(@DataSource(url = "jdbc:h2:file:./.h2/test", username = "sa", password = "test123"))
@@ -43,7 +45,7 @@ public class AlunoRepositoryJDBCTest {
         alunos.forEach(aluno -> {
             try {
                 alunoRepositoryJDBC.matricular(aluno);
-            } catch (AlunoRepositoryJDBCException e) {
+            } catch (AlunoNaoMatriculadoException e) {
                 e.printStackTrace();
             }
         });
@@ -59,7 +61,7 @@ public class AlunoRepositoryJDBCTest {
 
     @Test
     void matricularAlunoQuandoAlunoJaMatriculado() {
-        assertThrows(AlunoRepositoryException.class, () -> {
+        assertThrows(AlunoNaoMatriculadoException.class, () -> {
             Aluno aluno = AlunoBuilder.builder("123.456.789-01", "Eu mesmo", "eumesmo@email.com")
                     .comTelefone("11", "123456789")
                     .comTelefone("11", "12345678").build();
@@ -70,7 +72,7 @@ public class AlunoRepositoryJDBCTest {
     }
 
     @Test
-    void matricularAlunoQuandoNaoExisteAlunoMatriculadoComSucesso() throws AlunoRepositoryException {
+    void matricularAlunoQuandoNaoExisteAlunoMatriculadoComSucesso() throws AlunoNaoMatriculadoException {
         Aluno aluno = AlunoBuilder.builder("123.456.789-01", "Eu mesmo", "eumesmo@email.com")
                 .comTelefone("11", "123456789")
                 .comTelefone("11", "12345678").build();
@@ -82,8 +84,10 @@ public class AlunoRepositoryJDBCTest {
         List<Aluno> alunos = criarLista5Alunos();
         matricularAlunosParaTest(alunos);
 
-        Aluno result = alunoRepositoryJDBC.buscarPorCPF(new Cpf("555.555.555-55"));
-        assertNull(result);
+        assertThrows(AlunoNaoEncontradoException.class, () -> {
+            Aluno result = alunoRepositoryJDBC.buscarPorCPF(new Cpf("555.555.555-55"));
+            assertNull(result);
+        });
 
     }
 

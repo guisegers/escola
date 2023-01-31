@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import br.com.alura.dominio.aluno.Aluno;
 import br.com.alura.dominio.aluno.AlunoBuilder;
+import br.com.alura.dominio.aluno.AlunoNaoEncontradoException;
+import br.com.alura.dominio.aluno.AlunoNaoMatriculadoException;
 import br.com.alura.dominio.aluno.AlunoRepository;
 import br.com.alura.dominio.aluno.Cpf;
 import br.com.alura.dominio.aluno.Telefone;
@@ -24,7 +26,7 @@ public class AlunoRepositoryJDBC implements AlunoRepository {
     }
 
     @Override
-    public void matricular(Aluno aluno) throws AlunoRepositoryJDBCException {
+    public void matricular(Aluno aluno) throws AlunoNaoMatriculadoException {
         try {
             String sql = "INSERT INTO ALUNO (CPF, NOME, EMAIL) VALUES (?, ?, ?)";
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -42,23 +44,31 @@ public class AlunoRepositoryJDBC implements AlunoRepository {
                 stmt.execute();
             }
         } catch (SQLException e) {
-            throw new AlunoRepositoryJDBCException(e);
+            throw new AlunoNaoMatriculadoException(e);
         }
     }
 
     @Override
-    public Aluno buscarPorCPF(Cpf cpf) {
-        Aluno aluno = null;
+    public Aluno buscarPorCPF(Cpf cpf) throws AlunoNaoEncontradoException {
         try {
             String sql = "SELECT A.CPF, A.NOME, A.EMAIL, T.DDD, T.NUMERO FROM ALUNO A JOIN TELEFONE T ON A.CPF = T.CPF WHERE A.CPF = ?";
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, cpf.getCpf());
 
             final ResultSet rs = stmt.executeQuery();
+            List<Aluno> alunos = new ArrayList<>();
             while (rs.next()) {
-                aluno = AlunoBuilder.builder(rs.getString(1), rs.getString(2), rs.getString(3)).build();
+                Aluno aluno = AlunoBuilder.builder(rs.getString(1), rs.getString(2), rs.getString(3)).build();
                 aluno.addTelefone(rs.getString(4), rs.getString(5));
+                alunos.add(aluno);
             }
+            List<Aluno> result = alunos
+                    .stream().collect(Collectors.groupingBy(Aluno::getCpf)).entrySet().stream()
+                    .map(a -> addTelefoneAoAluno(a))
+                    .sorted((a1, a2) -> a1.getCpf().getCpf().compareTo(a2.getCpf().getCpf())).toList();
+            Aluno aluno = result.stream().findFirst()
+                    .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado"));
+            return aluno;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
@@ -68,16 +78,15 @@ public class AlunoRepositoryJDBC implements AlunoRepository {
                 throw new RuntimeException(e);
             }
         }
-        return aluno;
     }
 
     @Override
     public List<Aluno> listarTodosAlunosMatriculados() {
-        List<Aluno> alunos = new ArrayList<>();
         try {
             final String sql = "SELECT A.CPF, A.NOME, A.EMAIL, T.DDD, T.NUMERO FROM ALUNO A JOIN TELEFONE T ON A.CPF = T.CPF";
             final PreparedStatement stmt = connection.prepareStatement(sql);
             final ResultSet rs = stmt.executeQuery();
+            List<Aluno> alunos = new ArrayList<>();
             while (rs.next()) {
                 Aluno aluno = AlunoBuilder.builder(rs.getString(1), rs.getString(2), rs.getString(3)).build();
                 aluno.addTelefone(rs.getString(4), rs.getString(5));
@@ -85,8 +94,10 @@ public class AlunoRepositoryJDBC implements AlunoRepository {
             }
 
             List<Aluno> result = alunos
-                .stream().collect(Collectors.groupingBy(Aluno::getCpf)).entrySet().stream().map(a -> addTelefoneAoAluno(a)).sorted((a1, a2) -> a1.getCpf().getCpf().compareTo(a2.getCpf().getCpf())).toList();
-               
+                    .stream().collect(Collectors.groupingBy(Aluno::getCpf)).entrySet().stream()
+                    .map(a -> addTelefoneAoAluno(a))
+                    .sorted((a1, a2) -> a1.getCpf().getCpf().compareTo(a2.getCpf().getCpf())).toList();
+
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -98,7 +109,6 @@ public class AlunoRepositoryJDBC implements AlunoRepository {
             }
         }
     }
-
 
     private Aluno addTelefoneAoAluno(Entry<Cpf, List<Aluno>> a) {
         Aluno aluno = a.getValue().get(0);

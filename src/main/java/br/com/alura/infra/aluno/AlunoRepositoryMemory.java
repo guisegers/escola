@@ -6,6 +6,7 @@ import java.util.List;
 
 import br.com.alura.dominio.aluno.Aluno;
 import br.com.alura.dominio.aluno.AlunoNaoEncontradoException;
+import br.com.alura.dominio.aluno.AlunoNaoMatriculadoException;
 import br.com.alura.dominio.aluno.AlunoRepository;
 import br.com.alura.dominio.aluno.Cpf;
 
@@ -18,9 +19,9 @@ public class AlunoRepositoryMemory implements AlunoRepository {
     }
 
     @Override
-    public void matricular(final Aluno aluno) throws AlunoRepositoryMemoryException {
+    public void matricular(final Aluno aluno) throws AlunoNaoMatriculadoException {
         if (this.alunos.stream().anyMatch(a -> a.getCpf().getCpf().equals(aluno.getCpf().getCpf()))) {
-            throw new AlunoRepositoryMemoryException("Aluno já matriculado");
+            throw new AlunoNaoMatriculadoException("Aluno não pode ser matriculado pois já matriculado anteriormente");
         }
         this.alunos.add(aluno);
     }

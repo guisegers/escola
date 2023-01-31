@@ -1,12 +1,9 @@
-package dominio.aluno;
+package br.com.alura.dominio.aluno;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-
-import br.com.alura.dominio.aluno.Aluno;
-import br.com.alura.dominio.aluno.AlunoBuilder;
 
 public class AlunoTest {
     
