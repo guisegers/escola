@@ -1,4 +1,4 @@
-package br.com.alura.infra;
+package br.com.alura.infra.aluno;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

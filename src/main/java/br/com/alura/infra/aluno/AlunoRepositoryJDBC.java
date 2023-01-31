@@ -1,4 +1,4 @@
-package br.com.alura.infra;
+package br.com.alura.infra.aluno;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

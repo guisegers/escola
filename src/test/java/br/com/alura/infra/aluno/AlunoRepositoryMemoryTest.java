@@ -15,9 +15,6 @@ import br.com.alura.dominio.aluno.Aluno;
 import br.com.alura.dominio.aluno.AlunoBuilder;
 import br.com.alura.dominio.aluno.AlunoNaoEncontradoException;
 import br.com.alura.dominio.aluno.Cpf;
-import br.com.alura.infra.AlunoRepositoryException;
-import br.com.alura.infra.AlunoRepositoryMemory;
-import br.com.alura.infra.AlunoRepositoryMemoryException;
 
 public class AlunoRepositoryMemoryTest {
 

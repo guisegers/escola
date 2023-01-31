@@ -20,9 +20,6 @@ import com.radcortez.flyway.test.annotation.FlywayTest;
 import br.com.alura.dominio.aluno.Aluno;
 import br.com.alura.dominio.aluno.AlunoBuilder;
 import br.com.alura.dominio.aluno.Cpf;
-import br.com.alura.infra.AlunoRepositoryException;
-import br.com.alura.infra.AlunoRepositoryJDBC;
-import br.com.alura.infra.AlunoRepositoryJDBCException;
 
 @FlywayTest(@DataSource(url = "jdbc:h2:file:./.h2/test", username = "sa", password = "test123"))
 public class AlunoRepositoryJDBCTest {

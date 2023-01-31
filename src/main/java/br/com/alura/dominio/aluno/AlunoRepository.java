@@ -2,7 +2,7 @@ package br.com.alura.dominio.aluno;
 
 import java.util.List;
 
-import br.com.alura.infra.AlunoRepositoryException;
+import br.com.alura.infra.aluno.AlunoRepositoryException;
 
 public interface AlunoRepository {
     
