@@ -13,7 +13,7 @@ public class MatricularAluno {
         this.alunoRepository = alunoRepository;
     }
 
-    public void matricular(MatricularAlunoDto dados) throws AlunoNaoMatriculadoException{
+    public void executa(MatricularAlunoDto dados) throws AlunoNaoMatriculadoException{
         Aluno aluno = AlunoBuilder.builder(dados.cpf(), dados.nome(), dados.email()).build();
         alunoRepository.matricular(aluno);
     }

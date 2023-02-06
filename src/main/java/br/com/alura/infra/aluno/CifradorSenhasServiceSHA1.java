@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import br.com.alura.dominio.aluno.CifradorSenhas;
 
-public class CifradorSenhasServiceMD5 implements CifradorSenhas {
+public class CifradorSenhasServiceSHA1 implements CifradorSenhas {
 
     @Override
     public String cifrarSenha(String senha) {
